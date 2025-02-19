@@ -1,0 +1,28 @@
+services:
+  wkhtmltopdf:
+    image: docker.io/madnight/docker-alpine-wkhtmltopdf
+    container_name: wkhtmltopdf_container
+    volumes:
+      - ./templates:/templates
+      - ./media:/media
+    networks:
+      - app_network
+
+  db:
+    image: postgres:latest
+    container_name: postgres_db
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: checks_db
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+    networks:
+      - app_network
+
+volumes:
+  pg_data:
+
+networks:
+  app_network:
+    driver: bridge
