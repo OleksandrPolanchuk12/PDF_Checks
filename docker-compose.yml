@@ -1,13 +1,10 @@
 services:
-  wkhtmltopdf:
-    image: docker.io/madnight/docker-alpine-wkhtmltopdf
-    container_name: wkhtmltopdf_container
+  pdf_generator:
+    image: oberonamsterdam/wkhtmltopdf
+    container_name: pdf_generator_container
     volumes:
-      - ./templates:/templates
-      - ./media:/media
-    networks:
-      - app_network
-
+      - ./templates/check:/templates
+      - ./media/pdf:/media  
   db:
     image: postgres:latest
     container_name: postgres_db
@@ -15,14 +12,10 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: root
       POSTGRES_DB: checks_db
+    ports:
+      - "5432:5432"
     volumes:
       - pg_data:/var/lib/postgresql/data
-    networks:
-      - app_network
 
 volumes:
   pg_data:
-
-networks:
-  app_network:
-    driver: bridge
