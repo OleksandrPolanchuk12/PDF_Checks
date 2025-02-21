@@ -5,7 +5,7 @@ from rest_framework import serializers
 from printer.models import Printer
 from check.models import Check
 from rest_framework.response import Response
-from .tasks import Generate_PDF
+from .tasks import generatepdf
 
 
 class Give_Check(APIView):
@@ -15,14 +15,17 @@ class Give_Check(APIView):
         
         printers = Printer.objects.filter(point_id=point_id)
         if not printers.exists():
-            return Response({'Принтерів на цій точці немає'})
+            return Response({'No printers at this point'})
     
 
-        for printer in printers:
-            for type in ['client', 'kitchen']:
-                check = Check.objects.create(order=order, printer=printer, type=type)
-                Generate_PDF.delay(check.id)
+        for printer in printers:        
+            if not Check.objects.filter(order=order, printer=printer, type=printer.check_type).exists():
+                check = Check.objects.create(order=order, printer=printer, type=printer.check_type)
+                generatepdf.delay(check.id)
+            else:
+                return Response({'message': 'A check for this order already exists.'})
+
         
-        return Response({'message':'Чеки успішно створені'})
+        return Response({'message':'Checks successfully created'})
 
 

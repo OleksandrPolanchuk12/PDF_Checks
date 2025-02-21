@@ -1,31 +1,25 @@
-from Issuing_checks.celery import app
+from wkhtmltopdf import wkhtmltopdf
+import pdfkit, os
+from celery import shared_task
+from check.models import Check
 from django.template.loader import render_to_string
 from django.conf import settings
-import subprocess
-from django.core.files import File
-from check.models import Check
-import docker
+from rest_framework.response import Response
 
-@app.task
-def Generate_PDF(id_check):
+@shared_task
+def generatepdf(id_check):
     check = Check.objects.get(id=id_check)
     file_name = f'{str(check.id).zfill(6)}_{check.type.lower()}.pdf'
-    file_path = f'media/pdf/{file_name}'
+    file_path = f'media/pdf/{file_name}' 
 
-    html_file = f'templates/check/{check.type}_check.html'
+    html_file = f'templates/client_check.html'
 
     context = {
         'check': check,
     }
-    content = render_to_string(html_file, context)
 
-    client = docker.from_env()
-
-    container = client.containers.get('cfcaf30981a2')
-
-    with open(file_path, 'w') as f:
-        container.exec_run(f'wkhtmltopdf - -', stdin=content.encode(), stdout=f)
-
-    check.pdf.save(file_name, File(open(file_path, 'rb')))
-    
-    check.save()
+    html_string = render_to_string(html_file, context)
+    options = {
+        'enable-local-file-access': ''  
+    }
+    pdfkit.from_string(html_string, file_path, options=options)

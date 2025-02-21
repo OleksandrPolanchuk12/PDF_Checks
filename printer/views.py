@@ -14,7 +14,7 @@ class GetCheckView(APIView):
             serializers = CheckSerializers(checks, many=True)
             return Response(serializers.data, safe=False)
         else:
-            return Response({'message': 'Немає чеків для даного принтера'})
+            return Response({'message': 'No checks for this printer'})
 
     
 class CheckSerializers(serializers.ModelSerializer):
