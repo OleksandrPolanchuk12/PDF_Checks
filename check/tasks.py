@@ -5,6 +5,7 @@ from check.models import Check
 from django.template.loader import render_to_string
 from django.conf import settings
 from rest_framework.response import Response
+from django.core.files import File
 
 @shared_task
 def generatepdf(id_check):
@@ -12,7 +13,7 @@ def generatepdf(id_check):
     file_name = f'{str(check.id).zfill(6)}_{check.type.lower()}.pdf'
     file_path = f'media/pdf/{file_name}' 
 
-    html_file = f'templates/client_check.html'
+    html_file = f'{check.type.lower()}_check.html'
 
     context = {
         'check': check,
@@ -23,3 +24,6 @@ def generatepdf(id_check):
         'enable-local-file-access': ''  
     }
     pdfkit.from_string(html_string, file_path, options=options)
+
+    check.pdf.name = f'media/pdf/{file_name}'
+    check.save()

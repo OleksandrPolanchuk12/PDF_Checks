@@ -14,8 +14,11 @@ class Check(models.Model):
     class Meta:
         unique_together = ('order', 'printer', 'type')
 
-    def save(self, *args, **kwargs):
-        if Check.objects.filter(order=self.order, printer=self.printer, type=self.type).exists():
-            raise ValidationError(f"Чек для замовлення вже існує.")
-
-        super().save(*args, **kwargs)
+    @property
+    def total_price(self):
+        total = 0
+        for item in self.order:
+            price = item.get('price', 0)
+            quantity = item.get('quantity', 1)
+            total += price * quantity
+        return total
