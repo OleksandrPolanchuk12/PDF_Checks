@@ -1,11 +1,8 @@
-from wkhtmltopdf import wkhtmltopdf
-import pdfkit, os
+import pdfkit
 from celery import shared_task
 from check.models import Check
 from django.template.loader import render_to_string
 from django.conf import settings
-from rest_framework.response import Response
-from django.core.files import File
 
 @shared_task
 def generatepdf(id_check):
