@@ -67,4 +67,17 @@ class EditPrinterView(APIView):
         printer.save()
         return Response({'message': 'Printer edited'})
 
+
+class DeletePrinterView(APIView):
+    def post(self, request):
+        api_key = request.data.get('api_key', None)
+
+        if not api_key:
+            return Response({'message': 'API Key is required'})
+        try:
+            printer = Printer.objects.get(api_key=api_key)
+            printer.delete()
+            return Response({'message': 'Printer deleted successfully'})
+        except Printer.DoesNotExist:
+            return Response({'message': 'Printer not found'})
     
