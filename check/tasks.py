@@ -13,13 +13,13 @@ def generatepdf(id_check):
     html_file = f'{check.type.lower()}_check.html'
 
     context = {
-        'check': check,
+        'check': check
     }
-
     html_string = render_to_string(html_file, context)
     options = {
         'enable-local-file-access': ''  
     }
+    config = pdfkit.configuration()
     pdfkit.from_string(html_string, file_path, options=options)
 
     check.pdf.name = f'media/pdf/{file_name}'

@@ -1,11 +1,12 @@
 from django.db import models
+from point.models import Point
 
 class Printer(models.Model):
     type=[('kitchen', 'Kitchen'), ('client', 'Client')]
     name = models.CharField(max_length=255)
     api_key = models.CharField(max_length=255, unique=True)
     check_type = models.CharField(max_length=20, choices=type)
-    point_id = models.IntegerField()
+    point_id = models.ForeignKey(Point, on_delete=models.CASCADE)
 
     def save(self, *args, **kwargs):
         if not self.api_key:  

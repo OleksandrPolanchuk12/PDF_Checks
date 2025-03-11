@@ -4,6 +4,7 @@ from rest_framework.views import APIView
 from check.models import Check
 from .serializers import CheckSerializers   
 from rest_framework.response import Response
+from point.models import Point
 
 
 class GetCheckView(APIView):
@@ -42,6 +43,9 @@ class AddPrinterView(APIView):
         check_type = request.data.get('check_type', None)
         point_id = request.data.get('point_id', None)
 
+        if not Point.objects.filter(id=point_id):
+            return Response({'message': 'Point does not exist.'})  
+            
         if not name or not check_type or not point_id:
             return Response({'message': 'All fields are required'})
         printer = Printer.objects.create(name=name,check_type = check_type, point_id = point_id)

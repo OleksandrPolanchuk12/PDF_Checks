@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'check',
     'printer',
+    'point'
 
 ]
 
@@ -124,7 +125,7 @@ USE_I18N = True
 
 USE_TZ = True
 
-# Resis Celery
+# Redis Celery
 
 CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
 CELERY_RESULT_BACKEND = os.getenv('CELERY_RESULT_BACKEND')
