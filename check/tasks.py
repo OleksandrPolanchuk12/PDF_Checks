@@ -19,7 +19,6 @@ def generatepdf(id_check):
     options = {
         'enable-local-file-access': ''  
     }
-    config = pdfkit.configuration()
     pdfkit.from_string(html_string, file_path, options=options)
 
     check.pdf.name = f'media/pdf/{file_name}'

@@ -48,7 +48,7 @@ class AddPrinterView(APIView):
             
         if not name or not check_type or not point_id:
             return Response({'message': 'All fields are required'})
-        printer = Printer.objects.create(name=name,check_type = check_type, point_id = point_id)
+        printer = Printer.objects.create(name=name,check_type = check_type, point_id = Point.objects.get(id=point_id))
         printer.save()
         return Response({'message': 'Printer added'})
 
@@ -56,17 +56,20 @@ class AddPrinterView(APIView):
 class EditPrinterView(APIView):
     def post(self, request):
         api_key = request.data.get('api_key', None)
-        new_name = request.data.get('new_name', self.name)
-        new_type = request.data.get('new_check_type', self.check_type)
-        new_point_id = request.data.get('new_point_id', self.point_id)
+        new_name = request.data.get('new_name')
+        new_type = request.data.get('new_check_type')
+        new_point_id = request.data.get('new_point_id')
 
+        if not Point.objects.filter(id=new_point_id):
+            return Response({'message': 'Point does not exist.'})  
+        
         printer = Printer.objects.get(api_key=api_key)
         if new_name:
                 printer.name = new_name
         if new_type:
             printer.check_type = new_type
         if new_point_id:
-            printer.point_id = new_point_id
+            printer.point_id = Point.objects.get(id=new_point_id)
 
         printer.save()
         return Response({'message': 'Printer edited'})

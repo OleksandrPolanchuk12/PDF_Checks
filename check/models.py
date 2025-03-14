@@ -1,7 +1,5 @@
 from django.db import models
 from printer.models import Printer
-from django.core.exceptions import ValidationError
-
 
 class Check(models.Model):
 
@@ -9,10 +7,13 @@ class Check(models.Model):
     type = models.CharField(max_length=20, choices=[('kitchen', 'Kitchen'), ('client', 'Client')])  
     order = models.JSONField(default=dict)  
     status = models.CharField(max_length=20, choices=[('new', 'New'), ('rendered', 'Rendered'), ('printed', 'Printed')])  
+    number_table = models.CharField(null=False, blank=True)
     pdf = models.FileField(upload_to='media/pdf/')  
+    created_at = models.DateTimeField(auto_now_add=True) 
 
-    class Meta:
-        unique_together = ('order', 'printer', 'type')
+    def __str__(self):
+        return f"Чек {self.id}"
+    
 
     @property
     def total_price(self):
@@ -22,3 +23,4 @@ class Check(models.Model):
             quantity = item.get('quantity', 1)
             total += price * quantity
         return total
+    
