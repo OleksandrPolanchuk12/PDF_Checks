@@ -20,7 +20,7 @@ class Give_Check(APIView):
         if not printers.exists():
             return Response({'message': 'No printers at this point'})
 
-        time = now() - timedelta(minutes=5)
+        time = now() - timedelta(seconds=20)
         for printer in printers:
             if not Check.objects.filter(order=order, printer=printer, type=printer.check_type, created_at__gte=time).exists():
                 check = Check.objects.create(
