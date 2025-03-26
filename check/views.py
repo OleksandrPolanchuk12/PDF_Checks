@@ -1,10 +1,9 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .models import Check
-from django.utils.timezone import now
-from datetime import timedelta
 from printer.models import Printer
 from point.models import Point
+from django.core.exceptions import ValidationError
 from .tasks import generatepdf
 
 class Give_Check(APIView):
@@ -20,19 +19,17 @@ class Give_Check(APIView):
         if not printers.exists():
             return Response({'message': 'No printers at this point'})
 
-        time = now() - timedelta(seconds=20)
         for printer in printers:
-            if not Check.objects.filter(order=order, printer=printer, type=printer.check_type, created_at__gte=time).exists():
-                check = Check.objects.create(
-                    order=order,
-                    printer=printer,
-                    type=printer.check_type,
-                    number_table=number_table,
-                    status='new',
-                )
-                check.save()
-                generatepdf.delay(check.id)
-            else:
-                return Response({'message': 'A check for this order already exists for this printer.'})
-
+                try:
+                    check = Check(
+                        order=order,
+                        printer=printer,
+                        type=printer.check_type,
+                        number_table=number_table,
+                        status='new',
+                    )
+                    check.save()
+                    generatepdf.delay(check.id)
+                except ValidationError: 
+                    return Response({'message': 'Check with this order already exists.'})
         return Response({'message': 'Checks successfully created.'})

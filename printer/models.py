@@ -1,10 +1,11 @@
 from django.db import models
 from point.models import Point
+from rest_framework_api_key.models import APIKey
 
 class Printer(models.Model):
     type=[('kitchen', 'Kitchen'), ('client', 'Client')]
     name = models.CharField(max_length=255)
-    api_key = models.CharField(max_length=255, unique=True)
+    api_key = models.ForeignKey(APIKey, on_delete=models.CASCADE, null=True)
     check_type = models.CharField(max_length=20, choices=type)
     point_id = models.ForeignKey(Point, on_delete=models.CASCADE)
 

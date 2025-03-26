@@ -23,3 +23,4 @@ def generatepdf(id_check):
 
     check.pdf.name = f'media/pdf/{file_name}'
     check.save()
+    

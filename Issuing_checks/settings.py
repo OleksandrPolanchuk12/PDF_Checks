@@ -42,11 +42,19 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'rest_framework_api_key',
     'check',
     'printer',
     'point'
 
 ]
+
+REST_FRAMEWORK = {
+    "DEFAULT_AUTHENTICATION_CLASSES": [
+        "Issuing_checks.authentication.APIKeyAuthentication",  
+    ],
+    "DEFAULT_PERMISSION_CLASSES": [],
+}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
