@@ -5,8 +5,6 @@ from check.models import Check
 from .serializers import CheckSerializers   
 from rest_framework.response import Response
 from point.models import Point
-from rest_framework_api_key.models import APIKey
-from Issuing_checks.authentication import APIKeyAuthentication
 
 class GetCheckView(APIView):
     def post(self, request):
@@ -46,10 +44,17 @@ class AddPrinterView(APIView):
         check_type = request.data.get('check_type', None)
         point_id = request.data.get('point_id', None)
 
-        point = get_object_or_404(Point, id=point_id)
-            
         if not name or not check_type or not point_id:
             return Response({'message': 'All fields are required'})
+
+        point = get_object_or_404(Point, id=point_id)
+
+        if str(check_type) != 'client' or str(check_type) != 'kitchen':
+            return Response({'message': f'There is no such thing as a {str(check_type)} printer.'})
+        
+        if Printer.objects.filter(check_type=check_type, point_id=point).exists():
+            return Response({'message': 'Printer already exists'})
+        
         api_key_obj = request.auth
         printer = Printer.objects.create(name=name,check_type = check_type, point_id = point, api_key=api_key_obj)
         printer.save()
@@ -66,7 +71,7 @@ class EditPrinterView(APIView):
 
         point = get_object_or_404(Point, id=new_point_id)
         
-        printer = Printer.objects.get(id=id_printer)
+        printer = get_object_or_404(Printer, id=id_printer)
         if new_name:
             printer.name = new_name
         if new_type:

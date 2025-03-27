@@ -1,7 +1,6 @@
 from rest_framework.authentication import BaseAuthentication
 from rest_framework.exceptions import AuthenticationFailed
 from rest_framework_api_key.models import APIKey
-from rest_framework.response import Response
 
 class APIKeyAuthentication(BaseAuthentication):
     def authenticate(self, request):
