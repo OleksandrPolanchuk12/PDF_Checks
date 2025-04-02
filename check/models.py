@@ -19,9 +19,7 @@ class Check(models.Model):
     
     def save(self, *args, **kwargs):
         time = now() - timedelta(seconds=20)
-        try:
-            check = Check.objects.get(order=self.order, printer=self.printer, type=self.type, created_at__gte=time)
-        except Check.DoesNotExist:
+        if Check.objects.filter(order=self.order, printer=self.printer, type=self.type, created_at__gte=time).exists():
             raise ValidationError('Check with this order already exists')
         super().save(*args, **kwargs)
 

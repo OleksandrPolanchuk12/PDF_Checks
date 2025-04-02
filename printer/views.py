@@ -49,7 +49,7 @@ class AddPrinterView(APIView):
 
         point = get_object_or_404(Point, id=point_id)
 
-        if str(check_type) != 'client' or str(check_type) != 'kitchen':
+        if check_type not in ['client', 'kitchen']:
             return Response({'message': f'There is no such thing as a {str(check_type)} printer.'})
         
         if Printer.objects.filter(check_type=check_type, point_id=point).exists():
